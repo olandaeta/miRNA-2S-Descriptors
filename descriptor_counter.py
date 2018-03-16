@@ -15,8 +15,8 @@ function like this:
     Columns names that will be loaded: Y1_3,Y4_6,Expression level,mRNA SS
     minimun descriptor size: 2
     maximun descriptor size: 3
-    Path to file and name: ./results/prueba_2-3
-    Type of the ouput file i.e.(excel or csv): .xlsx
+    Path to file and name: ./results/test_2-3
+    Type of the ouput file i.e.(excel or csv): excel
 
 """
 
