@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 14 10:10:51 2018
-version 01
+version 02
 @author: Omar Gabriel Landaeta Herrera
 To run this script I use the python Shell prompt where I call the descriptors
 function like this:
@@ -41,16 +41,14 @@ def descriptor_maker(n=2,m=0):
     siz and return a descriptors list. The default window size is 2.    """     
     lista_array= []
     if (n == 2 and m == 0) or (n == m):        
-        lista_array = [''.join(i) for i in (product('.()', repeat=n))]
+        lista_array = map(''.join,product('.()', repeat=n))
     elif n > 2 and m == 0:
         for i in range(2,n+1):
-            lista_tuple = list(product('.()', repeat=i))
-            lista_array += [''.join(i) for i in lista_tuple]
+            lista_array += map(''.join,product('.()', repeat=i))
     else:
         for i in range(n,m+1):
-            lista_tuple = list(product('.()', repeat=i))
-            lista_array += [''.join(i) for i in lista_tuple]
-    return lista_array
+            lista_array += map(''.join,product('.()', repeat=i))
+    return list(lista_array)
 
 def horspool_P(text, pattern):
     """Function that implement the Boyer Moore Horspool algorithm for exact string
