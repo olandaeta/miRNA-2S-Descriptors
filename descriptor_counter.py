@@ -1,28 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 14 10:10:51 2018
-version 02
+version 03
 @author: Omar Gabriel Landaeta Herrera
-To run this script I use the python Shell prompt where I call the descriptors
-function like this:
-    descriptors()
+To run this script use the argparse module command-line interface
     
-    This will print the prompt on the screen like this:
-            
-    Path to file and name: miRNA_Dataset.xlsx
-    File type i.e.(excel or csv): excel
-    number or name ofthe sheet: 0
-    Columns names that will be loaded: Y1_3,Y4_6,Expression level,mRNA SS
-    minimun descriptor size: 2
-    maximun descriptor size: 3
-    Path to file and name: ./results/test_2-3
-    Type of the ouput file i.e.(excel or csv): excel
+Dependencies:
+- pandas
+- xlrd
+- itertools
+- argparse
+- time
 
 """
 
 import pandas as pd
 from itertools import product
-
+import argparse
+from time import time
 
 def read_file(l,sn,columns_names,f_type):
     """Function that take as input the file location(l), sheet name(sn), columns 
@@ -73,39 +68,21 @@ def horspool_P(text, pattern):
         k += shift.get(text[k], m)
     return ocurr
 
-def descriptors():
+def miRNA_descriptors(location,file_type,sheet_name,columns,column_ss,min_dex,max_dex,output_file_name,output_file_type):
     """The main function that will request user inputs to process a file and 
-    return a process file"""
-    location = input('Path to file and name: ')
-    file_type = input("File type i.e.(excel or csv): ")
-    if file_type == 'excel':
-        sheet_name = int(input('number or name ofthe sheet: '))
-    columns_names = input('Columns names that will be loaded: ').split(',')
-        
-    min_dex = int(input('minimun descriptor size: '))
-    if min_dex < 2:
-        min_dex = 2
-    max_dex = int(input('maximun descriptor size: '))
-    if max_dex == None:
-        max_dex = 0
-        
-    output_file_name = input('Path to file and name: ')
-    output_file_type = input('Type of the ouput file i.e.(excel or csv): ')
-    
+    return a process file"""    
+    columns_names = columns.split(',')      
     ss_df = read_file(location,sheet_name,columns_names,file_type)    
     dex = descriptor_maker(min_dex,max_dex)
-    dex_length = len(dex)
-    rows_size = ss_df.shape[0]
+    dex_length = len(dex)    
     header = [i for i in ss_df.columns[0:4]]
+    ss_nd = ss_df[column_ss].values
     
     for i in range(dex_length):
-        ss_df['Fr'+str(len(dex[i]))+'_'+str(i+1)+'_'+dex[i]] = 0
-        for j in range(rows_size):
-            ss_df.iat[j,i+4]=horspool_P(ss_df.iat[j,3], dex[i])
+        dex_l = [dex[i]]*len(ss_nd)
+        ss_df['Fr'+str(len(dex[i]))+'_'+str(i+1)+'_'+dex[i]] = [*map(horspool_P,ss_nd,dex_l)]
     
-    for v in range(dex_length):
-        if ss_df.iloc[:,v+4].sum() > 0:
-            header.append(ss_df.columns[v+4])
+    header += [ss_df.columns[v+4] for v in range(dex_length) if ss_df.iloc[:,v+4].sum() > 0]
              
     ss_df_output = ss_df[header]
     
