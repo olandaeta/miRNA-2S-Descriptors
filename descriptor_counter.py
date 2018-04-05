@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 14 10:10:51 2018
-version 03
+version 04
 @author: Omar Gabriel Landaeta Herrera
 To run this script use the argparse module command-line interface
     
@@ -69,8 +69,8 @@ def horspool_P(text, pattern):
     return ocurr
 
 def miRNA_descriptors(location,file_type,sheet_name,columns,column_ss,min_dex,max_dex,output_file_name,output_file_type):
-    """The main function that will request user inputs to process a file and 
-    return a process file"""    
+    """The main function that will process a file to count 
+       the descriptors and return a new file with this results"""    
     columns_names = columns.split(',')      
     ss_df = read_file(location,sheet_name,columns_names,file_type)    
     dex = descriptor_maker(min_dex,max_dex)
@@ -91,4 +91,37 @@ def miRNA_descriptors(location,file_type,sheet_name,columns,column_ss,min_dex,ma
     elif output_file_type == 'csv':
         ss_df_output.to_csv(output_file_name+'.csv', index = False)
     
+if __name__ == "__main__":
     
+    # ====================================================
+    # PARAMETERS
+    # ====================================================
+    parser = argparse.ArgumentParser(description='miRNA-SS-Descriptors: miRNA Secondary Structure Fragment Descriptors')
+    parser.add_argument('--input',      metavar='input',       type=str, help='Full path to input file including filename.',            default='miRNA_Dataset.xlsx')
+    parser.add_argument('--input_type', metavar='input_type',  type=str, help='Type of input files: csv or excel.',                     default='excel')
+    parser.add_argument('--sheet',      metavar='sheet',       type=str, help='Number of Excel sheet.',                                 default= 0)
+    parser.add_argument('--columns',    metavar='columns',     type=str, help='Columns to use in the output file, separated by comma.', default= 'Y1_3,Y4_6,Expression level,mRNA SS')
+    parser.add_argument('--column_ss',  metavar='column_ss',   type=str, help='Column name where the SS are on.',                       default='mRNA SS')
+    parser.add_argument('--min_size',   metavar='min_size',    type=str, help='Minimum descriptor size.',                               default='2')
+    parser.add_argument('--max_size',   metavar='max_size',    type=str, help='Maximum descriptor size.',                               default='3')
+    parser.add_argument('--output',     metavar='output',      type=str, help='Full path to output file without extension.',            default='./results_p/test_2-3')
+    parser.add_argument('--output_type',metavar='output_type', type=str, help='Type of output file: excel or csv.',                     default='excel')
+    # Parse command line arguments --------------------
+    args = parser.parse_args()       
+    location = args.input
+    file_type = args.input_type             
+    sheet_name = args.sheet
+    columns = args.columns
+    column_ss = args.column_ss
+    min_dex = int(args.min_size)
+    max_dex = int(args.max_size)
+    output_file_name = args.output
+    output_file_type = args.output_type
+    # ------------------------------------------------
+    # MAIN
+    # ------------------------------------------------  
+    start_time = time()
+    print("-> miRNA-SS-Descriptors: Calculating miRNA Secondary Structure Fragment Descriptors ...")
+    miRNA_descriptors(location,file_type,sheet_name,columns,column_ss,min_dex,max_dex,output_file_name,output_file_type)
+    print("Done!")
+    print("(%s seconds)" % (time() - start_time))   
